@@ -1,3 +1,4 @@
+import os
 from flask import Flask, Blueprint
 from config import Config
 from flask_jwt_extended import JWTManager
@@ -22,5 +23,7 @@ def create_app(config_class=Config):
 
     app.register_blueprint(bp_exception_handler)
     app.register_blueprint(api)
+
+    app.debug = eval(os.environ.get("DEBUG"))
 
     return app
