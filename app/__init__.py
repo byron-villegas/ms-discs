@@ -11,7 +11,8 @@ def create_app(config_class=Config):
 
     jwt = JWTManager(app)
 
-    cors = CORS(app, origins=["https://fe-discs.onrender.com"])
+    cors = CORS(app, resources={r"/api/*": {"origins": "https://fe-discs.onrender.com"}})
+
 
     # Register blueprints here
     from app.handlers.exception_handler import bp as bp_exception_handler
