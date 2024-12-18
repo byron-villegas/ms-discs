@@ -13,7 +13,6 @@ def create_app(config_class=Config):
 
     cors = CORS(app, resources={r"/api/*": {"origins": "https://fe-discs.onrender.com"}})
 
-
     # Register blueprints here
     from app.handlers.exception_handler import bp as bp_exception_handler
     from app.discs import bp as bp_discs
