@@ -1,5 +1,4 @@
 from flask import jsonify, request
-from flask_cors import cross_origin
 from app.discs import bp
 from app.discs import service
 from flask import Response
