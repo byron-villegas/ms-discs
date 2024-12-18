@@ -5,7 +5,6 @@ from app.discs import service
 from flask import Response
 
 @bp.route("/discs", methods=["GET"])
-@cross_origin(origin='*', headers=['Content- Type','Authorization'])
 def get_discs():
     type = request.args.get('type', None)
 
