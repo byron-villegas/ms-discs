@@ -1,6 +1,6 @@
 {
     "installCommand": "pipenv install -r requirements.txt",
-    "devCommand": "flask run",
+    "devCommand": "flask --app app run",
     "cleanUrls": true,
     "rewrites": [
         {
