@@ -3,6 +3,11 @@
     "outputDirectory": "dist",
     "devCommand": "flask run",
     "cleanUrls": true,
+    "builds": [
+        {
+            "use": "@vercel/python"
+        }
+    ],
     "rewrites": [
         {
             "source": "/:path*",
