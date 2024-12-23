@@ -18,8 +18,8 @@ class Config:
     CORS_ORIGIN = os.environ.get("CORS_ORIGIN")
     CORS_HEADERS = "Content-Type"
 
-def showBanner(): 
-    bannerFile = open(os.path.abspath(os.path.dirname(__file__)) + "/banner.txt", "r")
+def showBanner():
+    bannerFile = open(os.path.abspath(os.path.dirname(__file__)).replace("app", "") + "/banner.txt", "r")
     bannerLog = bannerFile.read()
     bannerFile.close()
 

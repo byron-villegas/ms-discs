@@ -1,5 +1,5 @@
 from flask import Flask, Blueprint
-from config import Config
+from app.config import Config
 from flask_jwt_extended import JWTManager
 from flask_cors import CORS
 
