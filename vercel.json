@@ -6,6 +6,13 @@
             "use": "@vercel/python"
         }
     ],
+    "functions": {
+        "app.py": {
+          "includeFiles": [
+            "app/**"
+          ]
+        }
+      },
     "routes": [
         {
             "src": "/(.*)",
