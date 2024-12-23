@@ -1,10 +1,14 @@
 {
-    "devCommand": "flask --app app run",
-    "cleanUrls": true,
-    "rewrites": [
+    "builds": [
         {
-            "source": "api/:path*",
-            "destination": "api/:path*"
+            "src": "/api/index.py",
+            "use": "@vercel/python"
+        }
+    ],
+    "routes": [
+        {
+            "src": "/(.*)",
+            "dest": "/api/index.py"
         }
     ]
 }
