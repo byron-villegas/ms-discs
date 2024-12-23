@@ -2,7 +2,7 @@
     "version": 2,
     "builds": [
         {
-            "src": "project/app.py",
+            "src": "ms-discs/app.py",
             "use": "@vercel/python"
         }
     ],
