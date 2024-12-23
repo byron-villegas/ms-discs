@@ -2,14 +2,19 @@
     "version": 2,
     "builds": [
         {
-            "src": "ms-discs/app.py",
+            "src": "app.py",
             "use": "@vercel/python"
         }
     ],
+    "functions": {
+        "app.py": {
+            "includeFiles": "app/**"
+        }
+    },
     "routes": [
         {
             "src": "/(.*)",
-            "dest": "ms-discs/app.py"
+            "dest": "/app.py"
         }
     ]
 }
