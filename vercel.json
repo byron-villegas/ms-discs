@@ -7,10 +7,8 @@
         }
     ],
     "functions": {
-        "app.py": {
-          "includeFiles": "app/**"
-        }
-      },
+        "app/**": {}
+    },
     "routes": [
         {
             "src": "/(.*)",
