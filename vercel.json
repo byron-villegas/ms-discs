@@ -8,9 +8,7 @@
     ],
     "functions": {
         "app.py": {
-          "includeFiles": [
-            "app/**"
-          ]
+          "includeFiles": "app/**"
         }
       },
     "routes": [
