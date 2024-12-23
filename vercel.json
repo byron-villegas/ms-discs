@@ -4,7 +4,7 @@
     "trailingSlash": false,
     "builds": [
         {
-            "src": "app/app.py",
+            "src": "app.py",
             "use": "@vercel/python"
         }
     ],
