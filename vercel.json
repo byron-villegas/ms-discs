@@ -1,5 +1,7 @@
 {
     "version": 2,
+    "cleanUrls": true,
+    "trailingSlash": false,
     "builds": [
         {
             "src": "src/app.py",
@@ -8,7 +10,7 @@
     ],
     "routes": [
         {
-            "src": "/api/(.*)",
+            "src": "/api/:path*",
             "dest": "src/app.py"
         }
     ]
