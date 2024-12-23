@@ -1,12 +1,11 @@
 {
     "installCommand": "pipenv install -r requirements.txt",
-    "outputDirectory": "dist",
     "devCommand": "flask run",
     "cleanUrls": true,
     "rewrites": [
         {
-            "source": "/:path*",
-            "destination": "/"
+            "source": "api/:path*",
+            "destination": "api/:path*"
         }
     ]
 }
