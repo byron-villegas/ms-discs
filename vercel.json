@@ -1,14 +1,12 @@
 {
-    "builds": [
+    "buildCommand": "flask run",
+    "outputDirectory": "dist",
+    "devCommand": "flask run",
+    "cleanUrls": true,
+    "rewrites": [
         {
-            "src": "app.py",
-            "use": "@vercel/python"
-        }
-    ],
-    "routes": [
-        {
-            "src": "/(.*)",
-            "dest": "app.py"
+            "source": "/:path*",
+            "destination": "/"
         }
     ]
 }
