@@ -1,3 +1,17 @@
+[project]
+name = "ms-discs"
+version = "1.0.0"
+description = "API for discs collection"
+readme = "README.md"
+license = {file = "LICENSE"}
+authors = [
+  {name = "Byron Villegas Moya", email = "byronvillegasm@gmail.com"}
+]
+maintainers = [
+  {name = "Byron Villegas Moya", email = "byronvillegasm@gmail.com"}
+]
+keywords = ["Flask", "API", "Discs", "Music"]
+
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 
