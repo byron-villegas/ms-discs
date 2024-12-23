@@ -1,5 +1,4 @@
 {
-    "buildCommand": "pip install -r requirements.txt",
     "outputDirectory": "dist",
     "devCommand": "flask run",
     "cleanUrls": true,
