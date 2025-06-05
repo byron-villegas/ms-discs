@@ -2,7 +2,7 @@ from app.db import get_db
 
 def find_all():
     db = get_db()
-    discs = list(db['discs'].find({}, {'_id': 0}))
+    discs = list(db['discs'].find({'enabled': True}, {'_id': 0}))
 
     return discs
 
