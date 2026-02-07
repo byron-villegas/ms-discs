@@ -1,18 +1,47 @@
-# Crear Environment
+# ms-discs
+Microservicio para mi coleccion de discos
+
+## Tabla de contenidos
+
+- [Crear Environment](#crear-environment)
+  - [Usar Environment](#usar-envinronment)
+  - [Instalar librerias](#instalar-librerias)
+  - [Librerias exclusivas para windows](#librerias-exclusivas-para-windows)
+  - [Actualizar requirements.txt](#actualizar-requirementstxt)
+  - [Listar librerias en formato json](#listar-librerias-en-formato-json)
+- [Ejecutar aplicacion](#ejecutar-aplicacion)
+- [Tests Unitarios](#tests-unitarios)
+  - [Configurar rutas](#configurar-rutas)
+  - [Ejecutarlo](#ejecutarlo)
+  - [Ejecutarlo con cobertura](#ejecutarlo-con-cobertura)
+  - [Generar reporte de cobertura en consola](#generar-reporte-de-cobertura-en-consola)
+  - [Generar reporte html de cobertura](#generar-reporte-html-de-cobertura)
+- [Tests de Rendimiento](#tests-de-rendimiento)
+- [Tests de Aceptación](#tests-de-aceptación)
+- [Links Referenciales](#links-referenciales)
+
+## Crear Environment
 Se debe ejecutar el siguiente comando
 
 ```shell
 python3 -m venv .venv
 ```
 
-# Instalar librerias
+### Usar Envinronment
+Se debe ejecutar el siguiente comando
+
+```shell
+source .venv/bin/activate
+```
+
+### Instalar librerias
 Se debe ejecutar el siguiente comando
 
 ```shell
 pip install -r requirements.txt
 ```
 
-# Librerias exclusivas para windows
+#### Librerias exclusivas para windows
 Cuando nos encontremos con una libreria exclusiva para windows debemos agregarle **;sys_platform == 'win32'** al final de la version en el archivo **requirements.txt**
 
 Ejemplo
@@ -22,7 +51,7 @@ pywin32==306;sys_platform == 'win32'
 ```
 Entonces cuando hagamos un pip install -r requirements.txt en un sistema operativo como linux, macOS excluira esa libreria
 
-# Actualizar requirements.txt
+### Actualizar requirements.txt
 Se debe ejecutar el siguiente comando
 
 ```shell
@@ -30,22 +59,22 @@ pip freeze > requirements.txt
 pip list --format json > requirements.json
 ```
 
-# Listar librerias en formato json
+### Listar librerias en formato json
 Se debe ejecutar el siguiente comando
 
 ```shell
 pip list --format json
 ```
 
-# Ejecutar aplicacion
+## Ejecutar aplicacion
 Se debe ejecutar el siguiente comando
 
 ```shell
 flask --app app run
 ```
 
-# Tests Unitarios
-### Configurar rutas
+## Tests Unitarios
+#### Configurar rutas
 Se debe crear un archivo pyproject con el siguiente contenido
 
 ```python
@@ -57,35 +86,35 @@ branch = true
 source = ["config", "app"]
 ```
 
-### Ejecutarlo
+#### Ejecutarlo
 Se debe ejecutar el siguiente comando
 
 ```shell
 pytest
 ```
 
-### Ejecutarlo con cobertura
+#### Ejecutarlo con cobertura
 Se debe ejecutar el siguiente comando
 
 ```shell
 coverage run -m pytest
 ```
 
-### Generar reporte de cobertura en consola
+##### Generar reporte de cobertura en consola
 Se debe ejecutar el siguiente comando
 
 ```shell
 coverage report
 ```
 
-### Generar reporte html de cobertura
+##### Generar reporte html de cobertura
 Se debe ejecutar el siguiente comando
 
 ```shell
 coverage html
 ```
 
-# Tests de Rendimiento
+## Tests de Rendimiento
 Se debe ejecutar el siguiente comando
 
 ```shell
@@ -94,14 +123,14 @@ locust -f performance-test/locust/python-flask.py -H http://localhost:5000 -u 5 
 
 Al finalizar generara un reporte locust-report.html
 
-# Tests de Aceptación
+## Tests de Aceptación
 Se debe ejecutar el siguiente comando
 
 ```shell
 behave acceptance-test/features -f html -o behave-report.html
 ```
 
-# Links Referenciales
+## Links Referenciales
 A continuación dejo links utilizados para realizar este proyecto
 
 [Python Naming Conventions](https://www.geeksforgeeks.org/python-naming-conventions/)
