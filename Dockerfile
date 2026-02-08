@@ -40,7 +40,6 @@ ENV PATH=/root/.local/bin:$PATH
 
 # Copiar código de la aplicación
 COPY app/ /app/app/
-COPY api/ /app/api/
 COPY app.py /app/
 COPY banner.txt /app/
 
