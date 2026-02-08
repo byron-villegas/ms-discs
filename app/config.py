@@ -21,17 +21,28 @@ class Config:
     CORS_HEADERS = "Content-Type"
 
 def showBanner():
-    bannerFile = open(os.path.abspath(os.path.dirname(__file__)).replace("app", "") + "/banner.txt", "r")
-    bannerLog = bannerFile.read()
-    bannerFile.close()
+    try:
+        # Obtener el directorio raíz del proyecto (un nivel arriba de app/)
+        current_dir = os.path.dirname(os.path.abspath(__file__))
+        root_dir = os.path.dirname(current_dir)
+        banner_path = os.path.join(root_dir, "banner.txt")
+        
+        if not os.path.exists(banner_path):
+            return  # Skip banner if file doesn't exist
+            
+        with open(banner_path, "r") as bannerFile:
+            bannerLog = bannerFile.read()
 
-    bannerLog = bannerLog.replace("package.name", "ms-discs")
-    bannerLog = bannerLog.replace("package.version", "1.0.0")
-    bannerLog = bannerLog.replace("python.version", platform.python_version())
-    bannerLog = bannerLog.replace("flask.version", flask.__version__)
-    bannerLog = bannerLog.replace("server.path", Config.SERVER_PATH)
-    bannerLog = bannerLog.replace("server.port", Config.SERVER_PORT)
+        bannerLog = bannerLog.replace("package.name", "ms-discs")
+        bannerLog = bannerLog.replace("package.version", "1.0.0")
+        bannerLog = bannerLog.replace("python.version", platform.python_version())
+        bannerLog = bannerLog.replace("flask.version", flask.__version__)
+        bannerLog = bannerLog.replace("server.path", Config.SERVER_PATH)
+        bannerLog = bannerLog.replace("server.port", Config.SERVER_PORT)
 
-    print(bannerLog)
+        print(bannerLog)
+    except Exception as e:
+        # Silently skip banner if there's any error
+        pass
 
 showBanner()
