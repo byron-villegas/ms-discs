@@ -43,18 +43,11 @@ COPY app/ /app/app/
 COPY app.py /app/
 COPY banner.txt /app/
 
-# Crear usuario no-root para ejecutar la aplicación
-RUN useradd -m -u 1000 appuser && \
-    chown -R appuser:appuser /app
-
-USER appuser
-
 # Exponer el puerto
 EXPOSE 5000
 
 # Variables de entorno por defecto
-ENV FLASK_APP=app.py \
-    FLASK_ENV=production
+ENV FLASK_APP=app.py
 
-# Comando para ejecutar la aplicación con gunicorn para producción
-CMD ["gunicorn", "--bind", "0.0.0.0:5000", "--workers", "4", "--timeout", "120", "app:app"]
+# Comando para ejecutar la aplicación con Flask
+CMD ["flask", "--app", "app", "run", "--host=0.0.0.0", "--port=5000"]

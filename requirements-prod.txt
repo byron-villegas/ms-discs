@@ -6,4 +6,3 @@ flasgger==0.9.7.1
 pymongo==4.10.1
 python-dotenv==1.0.1
 dnspython==2.7.0
-gunicorn==21.2.0
