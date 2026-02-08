@@ -101,6 +101,16 @@ def create_app(config_class=Config):
     from app.discs import bp as bp_discs
 
     api = Blueprint("api", __name__, url_prefix=config_class.SERVER_PATH)
+    
+    # Health check endpoint
+    @api.route('/health', methods=['GET'])
+    def health_check():
+        return {
+            "status": "healthy",
+            "service": "ms-discs",
+            "version": "1.0.0"
+        }, 200
+    
     api.register_blueprint(bp_discs)
 
     app.register_blueprint(bp_exception_handler)
