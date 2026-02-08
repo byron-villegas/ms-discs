@@ -8,7 +8,7 @@ def get_discs():
     type = request.args.get('type', None)
 
     if type is not None:
-        discs = service.get_discs_by_type(type)
+        discs = service.get_discs_by_type(type.upper())
         return jsonify(discs)
 
     favorite = request.args.get('favorite', None)
