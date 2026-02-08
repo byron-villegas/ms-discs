@@ -1,0 +1,20 @@
+# Development and testing dependencies
+-r requirements.txt
+
+# Testing
+pytest==8.3.2
+coverage==7.6.1
+assertpy==1.1
+
+# Behavior testing
+behave==1.2.6
+behave-html-formatter==0.9.10
+behave-restful==0.4.4
+
+# Load testing
+locust==2.15.1
+appian-locust==2.24.0
+
+# Additional dependencies
+Flask-BasicAuth==0.2.0
+pywin32==306;sys_platform == 'win32'
