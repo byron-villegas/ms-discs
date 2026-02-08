@@ -21,24 +21,17 @@ class Config:
     CORS_HEADERS = "Content-Type"
 
 def showBanner():
-    try:
-        banner_path = os.path.join(os.path.abspath(os.path.dirname(__file__)).replace("app", ""), "banner.txt")
-        if not os.path.exists(banner_path):
-            return  # Skip banner in production/serverless environments
-            
-        with open(banner_path, "r") as bannerFile:
-            bannerLog = bannerFile.read()
+    bannerFile = open(os.path.abspath(os.path.dirname(__file__)).replace("app", "") + "/banner.txt", "r")
+    bannerLog = bannerFile.read()
+    bannerFile.close()
 
-        bannerLog = bannerLog.replace("package.name", "ms-discs")
-        bannerLog = bannerLog.replace("package.version", "1.0.0")
-        bannerLog = bannerLog.replace("python.version", platform.python_version())
-        bannerLog = bannerLog.replace("flask.version", flask.__version__)
-        bannerLog = bannerLog.replace("server.path", Config.SERVER_PATH)
-        bannerLog = bannerLog.replace("server.port", Config.SERVER_PORT)
+    bannerLog = bannerLog.replace("package.name", "ms-discs")
+    bannerLog = bannerLog.replace("package.version", "1.0.0")
+    bannerLog = bannerLog.replace("python.version", platform.python_version())
+    bannerLog = bannerLog.replace("flask.version", flask.__version__)
+    bannerLog = bannerLog.replace("server.path", Config.SERVER_PATH)
+    bannerLog = bannerLog.replace("server.port", Config.SERVER_PORT)
 
-        print(bannerLog)
-    except Exception:
-        # Silently skip banner in production/serverless environments
-        pass
+    print(bannerLog)
 
 showBanner()
