@@ -43,14 +43,18 @@ def sample_discs():
 def test_get_products(app, monkeypatch, sample_discs):
     from app.discs import service
 
-    monkeypatch.setattr(service.repository, "find_discs", lambda type_value, favorite, page, size: (sample_discs, 2))
+    monkeypatch.setattr(
+        service.repository,
+        "find_discs",
+        lambda type_value, favorite, page, size, sort_field="author", sort_direction=1: (sample_discs, 2),
+    )
 
     with app.app_context():
         products = get_discs()
 
         assert products["items"] == [disc.model_dump() for disc in sample_discs]
         assert products["page"] == 1
-        assert products["size"] == 10
+        assert products["size"] == 15
         assert products["totalItems"] == 2
         assert products["totalPages"] == 1
 
@@ -60,23 +64,27 @@ def test_get_filtered_products(app, monkeypatch, sample_discs):
 
     captured = {}
 
-    def fake_find_discs(type_value, favorite, page, size):
+    def fake_find_discs(type_value, favorite, page, size, sort_field="author", sort_direction=1):
         captured["type_value"] = type_value
         captured["favorite"] = favorite
         captured["page"] = page
         captured["size"] = size
+        captured["sort_field"] = sort_field
+        captured["sort_direction"] = sort_direction
         return sample_discs, 2
 
     monkeypatch.setattr(service.repository, "find_discs", fake_find_discs)
 
     with app.app_context():
-        products = service.get_filtered_discs("CDS", True, 2, 5)
+        products = service.get_filtered_discs("CDS", True, 2, 5, "year", -1)
 
         assert products["items"] == [disc.model_dump() for disc in sample_discs]
         assert captured["type_value"] == "CDS"
         assert captured["favorite"] is True
         assert captured["page"] == 2
         assert captured["size"] == 5
+        assert captured["sort_field"] == "yearCreated"
+        assert captured["sort_direction"] == -1
 
 
 def test_get_product_by_sku(app, monkeypatch, sample_discs):

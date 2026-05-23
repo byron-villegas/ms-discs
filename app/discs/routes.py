@@ -35,6 +35,34 @@ def _parse_bool(param_name: str):
     return False, False
 
 
+def _parse_order(param_name: str = "order"):
+    raw_value = request.args.get(param_name)
+
+    if raw_value is None:
+        return "author", 1, True
+
+    normalized_value = raw_value.strip().lower()
+
+    if not normalized_value:
+        return "", 1, False
+
+    direction = 1
+
+    if normalized_value.endswith("-"):
+        normalized_value = normalized_value[:-1]
+        direction = -1
+    elif normalized_value.endswith("+"):
+        normalized_value = normalized_value[:-1]
+    elif raw_value.endswith(" "):
+        # Flask decodifica '+' sin escapar como espacio en query params.
+        direction = 1
+
+    if normalized_value in ("name", "author", "year"):
+        return normalized_value, direction, True
+
+    return "", direction, False
+
+
 @bp.route("/discs", methods=["GET"])
 def get_discs():
     """
@@ -76,7 +104,15 @@ def get_discs():
         schema:
           type: integer
           minimum: 1
-        example: 10
+        example: 15
+      - name: order
+        in: query
+        description: Orden por campo y dirección. Usa name+, name-, author+, author-, year+, year-
+        required: false
+        schema:
+          type: string
+          pattern: ^(name|author|year)(\\+|-)$
+        example: author+
     responses:
       200:
         description: Lista paginada de discos obtenida exitosamente
@@ -116,8 +152,9 @@ def get_discs():
     """
     type = request.args.get('type', None)
     page = _parse_positive_int('page', 1)
-    size = _parse_positive_int('size', 10)
+    size = _parse_positive_int('size', 15)
     favorite_enabled, favorite_valid = _parse_bool('favorite')
+    order_field, order_direction, order_valid = _parse_order('order')
 
     if page is None or size is None:
         return jsonify({"page": "page y size deben ser enteros positivos"}), 400
@@ -128,7 +165,17 @@ def get_discs():
     if not favorite_valid:
       return jsonify({"favorite": "favorite debe ser true o false"}), 400
 
-    discs = service.get_filtered_discs(type.upper() if type is not None else None, favorite_enabled, page, size)
+    if not order_valid:
+      return jsonify({"order": "order debe ser name+, name-, author+, author-, year+ o year-"}), 400
+
+    discs = service.get_filtered_discs(
+        type.upper() if type is not None else None,
+        favorite_enabled,
+        page,
+        size,
+        order_field,
+        order_direction,
+    )
 
     return jsonify(discs)
 

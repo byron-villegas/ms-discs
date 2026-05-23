@@ -4,13 +4,19 @@ from app.db import get_db
 from app.discs.models import Disc
 
 
-def _find_many(query: dict, page: int, size: int) -> Tuple[List[Disc], int]:
+def _find_many(
+    query: dict,
+    page: int,
+    size: int,
+    sort_field: str = 'author',
+    sort_direction: int = 1,
+) -> Tuple[List[Disc], int]:
     db = get_db()
     collection = db['discs']
     total = collection.count_documents(query)
     skip = (page - 1) * size
     discs_data = list(
-        collection.find(query, {'_id': 0}).sort('author', 1).skip(skip).limit(size)
+        collection.find(query, {'_id': 0}).sort(sort_field, sort_direction).skip(skip).limit(size)
     )
 
     return [Disc(**disc) for disc in discs_data], total
@@ -50,8 +56,21 @@ def find_favorite(page: int, size: int) -> Tuple[List[Disc], int]:
     return _find_many(build_discs_query(favorite=True), page, size)
 
 
-def find_discs(type_value: Optional[str], favorite: bool, page: int, size: int) -> Tuple[List[Disc], int]:
-    return _find_many(build_discs_query(type_value=type_value, favorite=favorite), page, size)
+def find_discs(
+    type_value: Optional[str],
+    favorite: bool,
+    page: int,
+    size: int,
+    sort_field: str = 'author',
+    sort_direction: int = 1,
+) -> Tuple[List[Disc], int]:
+    return _find_many(
+        build_discs_query(type_value=type_value, favorite=favorite),
+        page,
+        size,
+        sort_field,
+        sort_direction,
+    )
 
 
 def save(disc: dict):

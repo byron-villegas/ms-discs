@@ -40,7 +40,7 @@ def test_get_discs(client, monkeypatch, sample_disc):
     monkeypatch.setattr(
         routes.service,
         "get_filtered_discs",
-        lambda type_value=None, favorite=False, page=1, size=10: {
+        lambda type_value=None, favorite=False, page=1, size=10, order_field="author", order_direction=1: {
             "items": [sample_disc.model_dump()],
             "page": page,
             "size": size,
@@ -55,7 +55,7 @@ def test_get_discs(client, monkeypatch, sample_disc):
     payload = response.get_json()
     assert payload["items"] == [sample_disc.model_dump()]
     assert payload["page"] == 1
-    assert payload["size"] == 10
+    assert payload["size"] == 15
 
 
 def test_get_discs_with_pagination(client, monkeypatch, sample_disc):
@@ -64,7 +64,7 @@ def test_get_discs_with_pagination(client, monkeypatch, sample_disc):
     monkeypatch.setattr(
         routes.service,
         "get_filtered_discs",
-        lambda type_value=None, favorite=False, page=1, size=10: {
+        lambda type_value=None, favorite=False, page=1, size=10, order_field="author", order_direction=1: {
             "items": [sample_disc.model_dump()],
             "page": page,
             "size": size,
@@ -86,11 +86,13 @@ def test_get_discs_combined_filters(client, monkeypatch, sample_disc):
 
     captured = {}
 
-    def fake_get_filtered_discs(type_value=None, favorite=False, page=1, size=10):
+    def fake_get_filtered_discs(type_value=None, favorite=False, page=1, size=10, order_field="author", order_direction=1):
         captured["type_value"] = type_value
         captured["favorite"] = favorite
         captured["page"] = page
         captured["size"] = size
+        captured["order_field"] = order_field
+        captured["order_direction"] = order_direction
         return {
             "items": [sample_disc.model_dump()],
             "page": page,
@@ -111,6 +113,8 @@ def test_get_discs_combined_filters(client, monkeypatch, sample_disc):
     assert captured["favorite"] is True
     assert captured["page"] == 3
     assert captured["size"] == 7
+    assert captured["order_field"] == "author"
+    assert captured["order_direction"] == 1
 
 
 def test_get_discs_favorite_false_does_not_filter(client, monkeypatch, sample_disc):
@@ -118,11 +122,13 @@ def test_get_discs_favorite_false_does_not_filter(client, monkeypatch, sample_di
 
     captured = {}
 
-    def fake_get_filtered_discs(type_value=None, favorite=False, page=1, size=10):
+    def fake_get_filtered_discs(type_value=None, favorite=False, page=1, size=10, order_field="author", order_direction=1):
         captured["type_value"] = type_value
         captured["favorite"] = favorite
         captured["page"] = page
         captured["size"] = size
+        captured["order_field"] = order_field
+        captured["order_direction"] = order_direction
         return {
             "items": [sample_disc.model_dump()],
             "page": page,
@@ -137,10 +143,65 @@ def test_get_discs_favorite_false_does_not_filter(client, monkeypatch, sample_di
     assert response.status_code == 200
 
     assert captured["favorite"] is False
+    assert captured["order_field"] == "author"
+    assert captured["order_direction"] == 1
+
+
+def test_get_discs_order_name_asc(client, monkeypatch, sample_disc):
+    from app.discs import routes
+
+    captured = {}
+
+    def fake_get_filtered_discs(type_value=None, favorite=False, page=1, size=10, order_field="author", order_direction=1):
+        captured["order_field"] = order_field
+        captured["order_direction"] = order_direction
+        return {
+            "items": [sample_disc.model_dump()],
+            "page": page,
+            "size": size,
+            "totalItems": 1,
+            "totalPages": 1,
+        }
+
+    monkeypatch.setattr(routes.service, "get_filtered_discs", fake_get_filtered_discs)
+
+    response = client.get("/api/discs?order=name+")
+    assert response.status_code == 200
+    assert captured["order_field"] == "name"
+    assert captured["order_direction"] == 1
+
+
+def test_get_discs_order_year_desc(client, monkeypatch, sample_disc):
+    from app.discs import routes
+
+    captured = {}
+
+    def fake_get_filtered_discs(type_value=None, favorite=False, page=1, size=10, order_field="author", order_direction=1):
+        captured["order_field"] = order_field
+        captured["order_direction"] = order_direction
+        return {
+            "items": [sample_disc.model_dump()],
+            "page": page,
+            "size": size,
+            "totalItems": 1,
+            "totalPages": 1,
+        }
+
+    monkeypatch.setattr(routes.service, "get_filtered_discs", fake_get_filtered_discs)
+
+    response = client.get("/api/discs?order=year-")
+    assert response.status_code == 200
+    assert captured["order_field"] == "year"
+    assert captured["order_direction"] == -1
 
 
 def test_get_discs_invalid_favorite(client):
     response = client.get("/api/discs?favorite=maybe")
+    assert response.status_code == 400
+
+
+def test_get_discs_invalid_order(client):
+    response = client.get("/api/discs?order=genre+")
     assert response.status_code == 400
 
 

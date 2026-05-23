@@ -25,13 +25,13 @@ def _build_paginated_response(discs, page: int, size: int, total_items: int):
     }
 
 
-def get_discs(page: int = 1, size: int = 10):
+def get_discs(page: int = 1, size: int = 15):
     _validate_pagination(page, size)
     discs, total_items = repository.find_discs(None, False, page, size)
 
     return _build_paginated_response(discs, page, size, total_items)
 
-def get_discs_by_type(type: str, page: int = 1, size: int = 10):
+def get_discs_by_type(type: str, page: int = 1, size: int = 15):
     _validate_pagination(page, size)
     pattern = re.compile(r"[A-Za-z0-9]+")
 
@@ -42,14 +42,21 @@ def get_discs_by_type(type: str, page: int = 1, size: int = 10):
 
     return _build_paginated_response(discs, page, size, total_items)
 
-def get_favorite_discs(page: int = 1, size: int = 10):
+def get_favorite_discs(page: int = 1, size: int = 15):
     _validate_pagination(page, size)
     discs, total_items = repository.find_discs(None, True, page, size)
 
     return _build_paginated_response(discs, page, size, total_items)
 
 
-def get_filtered_discs(type: Optional[str] = None, favorite: bool = False, page: int = 1, size: int = 10):
+def get_filtered_discs(
+    type: Optional[str] = None,
+    favorite: bool = False,
+    page: int = 1,
+    size: int = 15,
+    order_field: str = "author",
+    order_direction: int = 1,
+):
     _validate_pagination(page, size)
 
     if type is not None:
@@ -58,7 +65,8 @@ def get_filtered_discs(type: Optional[str] = None, favorite: bool = False, page:
         if not re.fullmatch(pattern, type):
             abort(make_response(jsonify({"type": "Solo admite letras y numeros"}), 400))
 
-    discs, total_items = repository.find_discs(type, favorite, page, size)
+    sort_field = "yearCreated" if order_field == "year" else order_field
+    discs, total_items = repository.find_discs(type, favorite, page, size, sort_field, order_direction)
 
     return _build_paginated_response(discs, page, size, total_items)
 
