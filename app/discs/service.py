@@ -1,30 +1,66 @@
 
 import re
+from math import ceil
+from typing import Optional
 
 from flask import abort, jsonify, make_response
 from app.exceptions.error_negocio_exception import ErrorNegocioException
 from app.discs import repository
 from app.discs.models import Disc
 
-def get_discs():
-    discs = repository.find_all()
-    
-    return [disc.model_dump() for disc in discs]
+def _validate_pagination(page: int, size: int):
+    if page < 1 or size < 1:
+        abort(make_response(jsonify({"page": "page y size deben ser mayores que cero"}), 400))
 
-def get_discs_by_type(type: str):
+
+def _build_paginated_response(discs, page: int, size: int, total_items: int):
+    total_pages = ceil(total_items / size) if total_items > 0 else 0
+
+    return {
+        "items": [disc.model_dump() for disc in discs],
+        "page": page,
+        "size": size,
+        "totalItems": total_items,
+        "totalPages": total_pages,
+    }
+
+
+def get_discs(page: int = 1, size: int = 10):
+    _validate_pagination(page, size)
+    discs, total_items = repository.find_discs(None, False, page, size)
+
+    return _build_paginated_response(discs, page, size, total_items)
+
+def get_discs_by_type(type: str, page: int = 1, size: int = 10):
+    _validate_pagination(page, size)
     pattern = re.compile(r"[A-Za-z0-9]+")
 
     if not re.fullmatch(pattern, type):
         abort(make_response(jsonify({"type": "Solo admite letras y numeros"}), 400))
 
-    discs = repository.find_by_type(type)
-    
-    return [disc.model_dump() for disc in discs]
+    discs, total_items = repository.find_discs(type, False, page, size)
 
-def get_favorite_discs():
-    discs = repository.find_favorite()
-    
-    return [disc.model_dump() for disc in discs]
+    return _build_paginated_response(discs, page, size, total_items)
+
+def get_favorite_discs(page: int = 1, size: int = 10):
+    _validate_pagination(page, size)
+    discs, total_items = repository.find_discs(None, True, page, size)
+
+    return _build_paginated_response(discs, page, size, total_items)
+
+
+def get_filtered_discs(type: Optional[str] = None, favorite: bool = False, page: int = 1, size: int = 10):
+    _validate_pagination(page, size)
+
+    if type is not None:
+        pattern = re.compile(r"[A-Za-z0-9]+")
+
+        if not re.fullmatch(pattern, type):
+            abort(make_response(jsonify({"type": "Solo admite letras y numeros"}), 400))
+
+    discs, total_items = repository.find_discs(type, favorite, page, size)
+
+    return _build_paginated_response(discs, page, size, total_items)
 
 def find_by_sku(sku: str):
     disc = repository.find_by_sku(sku)

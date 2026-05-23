@@ -6,6 +6,35 @@ from flasgger import swag_from
 from pydantic import ValidationError
 
 
+def _parse_positive_int(param_name: str, default: int):
+    raw_value = request.args.get(param_name)
+
+    if raw_value is None:
+        return default
+
+    try:
+        return int(raw_value)
+    except ValueError:
+        return None
+
+
+def _parse_bool(param_name: str):
+    raw_value = request.args.get(param_name)
+
+    if raw_value is None:
+        return False, True
+
+    normalized_value = raw_value.strip().lower()
+
+    if normalized_value in ("true", "1", "yes", "on"):
+        return True, True
+
+    if normalized_value in ("false", "0", "no", "off"):
+        return False, True
+
+    return False, False
+
+
 @bp.route("/discs", methods=["GET"])
 def get_discs():
     """
@@ -14,7 +43,7 @@ def get_discs():
     tags:
       - Discs
     summary: Obtener lista de discos
-    description: Retorna todos los discos habilitados. Puede filtrar por tipo o favoritos
+    description: Retorna todos los discos habilitados. Puede filtrar por tipo, favoritos o combinar ambos filtros
     parameters:
       - name: type
         in: query
@@ -26,18 +55,56 @@ def get_discs():
         example: cds
       - name: favorite
         in: query
-        description: Filtrar solo discos favoritos
+        description: Filtrar solo discos favoritos. Usa false para no aplicar el filtro.
         required: false
         schema:
-          type: string
-        example: "true"
+          type: boolean
+          default: false
+        example: true
+      - name: page
+        in: query
+        description: Número de página, inicia en 1
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+        example: 1
+      - name: size
+        in: query
+        description: Cantidad de resultados por página
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+        example: 10
     responses:
       200:
-        description: Lista de discos obtenida exitosamente
+        description: Lista paginada de discos obtenida exitosamente
         schema:
-          type: array
-          items:
-            $ref: '#/definitions/Disc'
+          type: object
+          properties:
+            items:
+              type: array
+              items:
+                $ref: '#/definitions/Disc'
+            page:
+              type: integer
+              example: 1
+            size:
+              type: integer
+              example: 10
+            totalItems:
+              type: integer
+              example: 25
+            totalPages:
+              type: integer
+              example: 3
+          required:
+            - items
+            - page
+            - size
+            - totalItems
+            - totalPages
       400:
         description: Error de validación
         schema:
@@ -48,18 +115,20 @@ def get_discs():
               example: "Solo admite letras y numeros"
     """
     type = request.args.get('type', None)
+    page = _parse_positive_int('page', 1)
+    size = _parse_positive_int('size', 10)
+    favorite_enabled, favorite_valid = _parse_bool('favorite')
 
-    if type is not None:
-        discs = service.get_discs_by_type(type.upper())
-        return jsonify(discs)
+    if page is None or size is None:
+        return jsonify({"page": "page y size deben ser enteros positivos"}), 400
 
-    favorite = request.args.get('favorite', None)
+    if page < 1 or size < 1:
+        return jsonify({"page": "page y size deben ser mayores que cero"}), 400
 
-    if favorite is not None:
-        discs = service.get_favorite_discs()
-        return jsonify(discs)
+    if not favorite_valid:
+      return jsonify({"favorite": "favorite debe ser true o false"}), 400
 
-    discs = service.get_discs()
+    discs = service.get_filtered_discs(type.upper() if type is not None else None, favorite_enabled, page, size)
 
     return jsonify(discs)
 
